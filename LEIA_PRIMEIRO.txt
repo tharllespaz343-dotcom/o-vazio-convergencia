@@ -1,0 +1,7 @@
+O VAZIO: CONVERGENCIA - PACOTE COMPLETO
+
+O site completo esta neste ZIP. Para enviar ao repositorio privado, extraia o ZIP e execute PUBLICAR_NO_GITHUB.bat com Git for Windows instalado e acesso a sua conta GitHub.
+
+O envio do codigo NAO torna o site privado na web. Se desejar apenas dois usuarios com acesso, configure uma hospedagem com autenticacao (ex.: Cloudflare Access). O GitHub Pages e normalmente publico.
+
+Abra INICIAR_LOCAL.bat para testar localmente com Python instalado.
