@@ -1,13 +1,9 @@
-name: Publicar site (quando estiver completo)
+name: Publicar O Vazio Convergencia
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - 'index.html'
-      - 'site/**'
-      - '.github/workflows/pages.yml'
 
 permissions:
   contents: read
@@ -26,28 +22,24 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Conferir aplicação
-        id: check
+      - name: Verificar arquivos essenciais
         run: |
-          if [ -f index.html ]; then
-            echo 'ready=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'ready=false' >> "$GITHUB_OUTPUT"
-            echo 'index.html ausente: publicação ignorada.'
-          fi
-      - name: Preparar site estático
-        if: steps.check.outputs.ready == 'true'
+          test -f index.html
+          test -f editor.html
+          test -f duelo.html
+          test -f site.js
+          test -d assets
+      - name: Preparar pacote integral do site
         run: |
           mkdir -p _site
-          cp index.html _site/index.html
+          cp index.html editor.html duelo.html site.js _site/
+          cp -R assets _site/assets
           if [ -d site ]; then cp -R site/. _site/; fi
+          touch _site/.nojekyll
       - uses: actions/configure-pages@v5
-        if: steps.check.outputs.ready == 'true'
       - uses: actions/upload-pages-artifact@v3
-        if: steps.check.outputs.ready == 'true'
         with:
           path: _site
-      - name: Publicar
-        if: steps.check.outputs.ready == 'true'
+      - name: Publicar no GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
