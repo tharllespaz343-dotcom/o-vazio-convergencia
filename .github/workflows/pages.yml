@@ -20,22 +20,34 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ hashFiles('index.html') != '' }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Conferir aplicação
+        id: check
+        run: |
+          if [ -f index.html ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'index.html ausente: publicação ignorada.'
+          fi
       - name: Preparar site estático
+        if: steps.check.outputs.ready == 'true'
         run: |
           mkdir -p _site
           cp index.html _site/index.html
           if [ -d site ]; then cp -R site/. _site/; fi
       - uses: actions/configure-pages@v5
+        if: steps.check.outputs.ready == 'true'
       - uses: actions/upload-pages-artifact@v3
+        if: steps.check.outputs.ready == 'true'
         with:
           path: _site
       - name: Publicar
+        if: steps.check.outputs.ready == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
